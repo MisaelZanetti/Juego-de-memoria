@@ -53,10 +53,13 @@ let boton;
 let input;
 let intentosRestantes = 6;
 let letrasIncorrectas = [];
+let letrasAdivinadas = [];
 let game_over_sound;
+let game_won_sound;
 
 function preload() {
     game_over_sound = loadSound('gameover.mp3');
+    game_won_sound = loadSound('Victory.mp3');
 }
 
 function setup() {
@@ -83,7 +86,8 @@ function setup() {
 function comparar() {
     let letraEncontrada = false;
     let letraIngresada = input.value().toLowerCase();
-    if (letrasIncorrectas.includes(letraIngresada)) {
+    let largopalabra = palabra.length
+    if (letrasIncorrectas.includes(letraIngresada) || letrasAdivinadas.includes(letraIngresada)) {
         letra_repetida();
         input.value('');
         return;
@@ -92,6 +96,8 @@ function comparar() {
     for (let i = 0; i < palabra.length; i++) {
         if (palabra[i] === letraIngresada) {
             letraEncontrada = true;
+            letrasAdivinadas.push(letraIngresada);
+            strokeWeight(1);
             fill(255, 0, 0);
             let posx = windowWidth - 800 + i * 50
             square(posx, 500, 50, 10);
@@ -103,11 +109,15 @@ function comparar() {
     }
     if (!letraEncontrada) {
         intentosRestantes -= 1;
-        letrasIncorrectas.push(letraIngresada)
+        letrasIncorrectas.push(letraIngresada);
     }
     input.value('');
 
     dibujarAhorcado();
+
+    if (letrasAdivinadas.length === largopalabra) {
+        ganaste();
+    }
 }
 
 function letra_repetida() {
@@ -125,6 +135,7 @@ function mostrar_palabra() {
     let i = random(0, 100);
     i = Math.floor(i);
     palabra = palabras[i];
+    letrasAdivinadas = [];
     console.log(palabra);
     dibujar();
 }
@@ -176,6 +187,25 @@ function gameover() {
     textSize(25);
     text(`La palabra era: ${palabra}`, windowWidth / 2, 300);
     text(`Toca el boton de abajo para volver a jugar`, windowWidth / 2, 330);
+    botonReiniciar = createImg('reset.png', 'Imagen Reset');
+    botonReiniciar.position(windowWidth / 2 - 50, windowHeight - 105);
+    botonReiniciar.size(100, 100);
+    botonReiniciar.mousePressed(() => { location.reload(); });
+}
+
+function ganaste() {
+    game_won_sound.play(0);
+    input.remove();
+    boton.remove();
+    background(0, 255, 0);
+    strokeWeight(3);
+    textAlign(CENTER, CENTER);
+    textSize(50);
+    text('¡Ganaste!', windowWidth / 2, 200);
+    strokeWeight(1);
+    textSize(25);
+    text('¡Felicidades! Adivinaste la palabra.', windowWidth / 2, 300);
+    text('Toca el boton de abajo para volver a jugar', windowWidth / 2, 330);
     botonReiniciar = createImg('reset.png', 'Imagen Reset');
     botonReiniciar.position(windowWidth / 2 - 50, windowHeight - 105);
     botonReiniciar.size(100, 100);
