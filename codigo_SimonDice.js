@@ -7,7 +7,7 @@ let indice = 0;
 let intervalo;
 let secuencia = [];
 let secuencia_usuario = [];
-let largo = 9;
+let largo = 4;
 let NumeroRandom;
 let verificacion = true;
 let largo_verificacion = largo;
@@ -23,6 +23,7 @@ let secuencia_funcionando = true;
 let delay2 = 0;
 let spriteactivo = false;
 let dice = '...';
+let game_over_sound;
 
 function preload() {
     simon_dice = loadImage('simon_dice.png')
@@ -32,6 +33,7 @@ function preload() {
     Sound3 = loadSound('Sound3.mp3');
     Sound4 = loadSound('Sound4.mp3');
     start = loadSound('Start.mp3');
+    game_over_sound = loadSound('gameover.mp3');
 }
 
 function setup() {
@@ -150,7 +152,6 @@ function draw() {
         textSize(20);
         aviso =text('En el siguiente turno los colores del juego van a cambiar de lugar, asi que memorizate el orden de colores y no de lugares', 20, 100, 350);
     }
-    console.log(secuencia);
 }
 
 function intercambiarPosiciones() {
@@ -239,6 +240,7 @@ function verificar_juego() {
         if (secuencia_usuario[i] != secuencia[i]) {
             verificacion = false;
             alert("¡MAL! Reinicia la página para volver a jugar");
+            game_over_sound.play(0);
             break;
         }
     }
@@ -251,7 +253,12 @@ function verificar_juego() {
             let color_nuevo = floor(random(0, 4));
             secuencia.push(color_nuevo);
             puntaje++;
-            iniciarSecuencia();
+            if (largo_verificacion === 9) {
+                setTimeout(() => {iniciarSecuencia()}, 5500);
+            }
+            if (largo_verificacion != 9) {
+                iniciarSecuencia();
+            }
         }
     }
 }
